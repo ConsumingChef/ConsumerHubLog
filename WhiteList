@@ -1,0 +1,61 @@
+
+
+local KeyText = game.CoreGui:FindFirstChild("Login").Drag.MainFrame.Enter
+	local done = false
+	
+	local WhiteListedTokens = {
+
+		"test",
+		"test1",
+		"Consume"
+
+
+	}
+
+	for WhiteList, token in pairs(WhiteListedTokens) do
+		if  KeyText.Text == token then
+			done = true
+			print("Key found")
+		end
+	end
+
+if done == true then
+
+	warn("INJECTING")
+	game.CoreGui:FindFirstChild("Login").Drag.MainFrame.Visible = false
+	game.CoreGui:FindFirstChild("Login").Drag.Success.Visible = true
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading"
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading."
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading.."
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading..."
+	wait(0.5)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Success!"
+	wait(1)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading script"
+	wait(0.5)
+	warn("Injecting")
+	game.CoreGui:FindFirstChild("Login").Enabled = false
+	-- inject script
+else
+
+	game.CoreGui:FindFirstChild("Login").Drag.MainFrame.Visible = false
+	game.CoreGui:FindFirstChild("Login").Drag.Success.Visible = true
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading"
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading."
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading.."
+	wait(0.3)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Loading..."
+	wait(0.5)
+	game.CoreGui:FindFirstChild("Login").Drag.Success.TextO.Text = "Invalid key!"
+	wait(1)
+	game.CoreGui:FindFirstChild("Login").Drag.MainFrame.Visible = true
+	game.CoreGui:FindFirstChild("Login").Drag.Success.Visible = false
+
+end
+
+
