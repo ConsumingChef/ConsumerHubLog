@@ -1,0 +1,537 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local Settings = Instance.new("Configuration")
+
+--Properties:
+
+Settings.Name = "Settings"
+Settings.Parent = game.StarterGui.Login.TrelloAPI
+
+-- Module Scripts:
+
+local fake_module_scripts = {}
+
+do -- nil.TrelloAPI
+	local script = Instance.new('ModuleScript', nil)
+	script.Name = "TrelloAPI"
+	local function module_script()
+		--[[
+		   ___                                  _   _       ____                          _                     
+		  / _ \   _   _    __ _    ___   _ __  (_) | |_    / ___|    ___   _ __  __   __ (_)   ___    ___   ___ 
+		 | | | | | | | |  / _` |  / _ \ | '__| | | | __|   \___ \   / _ \ | '__| \ \ / / | |  / __|  / _ \ / __|
+		 | |_| | | |_| | | (_| | |  __/ | |    | | | |_     ___) | |  __/ | |     \ V /  | | | (__  |  __/ \__ \
+		  \__\_\  \__,_|  \__,_|  \___| |_|    |_|  \__|   |____/   \___| |_|      \_/   |_|  \___|  \___| |___/
+		  
+		  Need Help With Documention or Script? Join Our Comunity: https://discord.gg/3m5m6TaC6g or contact us on our Dev Forum post  
+		  
+		  TrelloApiModule: Writted By InceptionStrange(@Sonostrano20) & JustFury (@FuryX547)
+		  Dev Forum Post: https://devforum.roblox.com/t/1641593
+		  Documentation: https://inceptionstrange.gitbook.io/trelloapi/
+		  
+		  
+		--]]
+		
+		-- // Var
+		local TrelloAPI = {
+			BoardsAPI = require(script:WaitForChild("BoardsAPI")),
+			CardsAPI = require(script:WaitForChild("CardsAPI")),
+			CommentsAPI = require(script:WaitForChild("CommentsAPI"))
+		}
+		
+		
+		-- // Security
+	
+		
+		
+		return TrelloAPI
+		
+	end
+	fake_module_scripts[script] = module_script
+end
+do -- nil.BoardsAPI
+	local script = Instance.new('ModuleScript', nil)
+	script.Name = "BoardsAPI"
+	local function module_script()
+		-- // Services
+		local HttpService = game:GetService("HttpService")
+		
+		-- // Var
+		local BoardsAPI = {}
+		local Response
+		
+		local Settings = script.Parent:WaitForChild("Settings")
+		local TrelloAPIKey = Settings:WaitForChild("TrelloKey").Value
+		local TrelloToken = Settings:WaitForChild("TrelloToken").Value
+		
+		
+		function BoardsAPI.GetBoardInfo(BoardId: string)
+			if not BoardId then
+				warn("[SERVER] BoardsAPI • [GetBoardInfo] : BoardId is missing.")
+				return false
+			end
+			
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/boards/" .. BoardId .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+			
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [GetBoardInfo] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		function BoardsAPI.GetCardsOnBoard(BoardId: string)
+			if not BoardId then
+				warn("[SERVER] BoardsAPI • [GetCardsOnBoard] : BoardId is missing.")
+				return false
+			end
+		
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/boards/" .. BoardId .. "/cards" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+		
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [GetCardsOnBoard] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		
+		function BoardsAPI.GetLabelsOnBoard(BoardId: string)
+			if not BoardId then
+				warn("[SERVER] BoardsAPI • [GetLabelsOnBoard] : BoardId is missing.")
+				return false
+			end
+		
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/boards/" .. BoardId .. "/labels" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+		
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [GetLabelsOnBoard] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		
+		function BoardsAPI.GetCardOnBoard(BoardId: string, CardName: string)
+			if not BoardId then
+				warn("[SERVER] BoardsAPI • [GetCardOnBoard] : BoardId is missing.")
+				return false
+			end
+			
+			local CardID
+			local Cards = BoardsAPI.GetCardsOnBoard(BoardId)
+			
+			if not Cards then
+				warn("[SERVER] BoardsAPI • [GetListID] : Something went wrong try to check if BoardID is correct.")
+				return false
+			end
+		
+			
+			for _,Data in pairs(Cards) do
+				if CardName == Data.name then
+					CardID = Data.id
+					
+					local Succ, Err = pcall(function()
+						Response = HttpService:GetAsync("https://api.trello.com/1/boards/" .. BoardId .. "/cards/" .. CardID .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+					end)
+		
+					if not Succ then
+						warn("[SERVER] BoardsAPI • [GetCardOnBoard] : ", Err)
+						return false
+					else
+						Response = HttpService:JSONDecode(Response)
+						return Response
+					end
+				else
+					warn("[SERVER] BoardsAPI • [GetCardOnBoard] : Card Not Found.")
+					return false
+				end	
+			end	
+		end
+		
+		
+		function BoardsAPI.GetBoardID(Name: string)
+			if not Name then
+				warn("[SERVER] BoardsAPI • [GetBoardID] : Name is missing.")
+				return false
+			end
+			
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/members/me/boards" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+		
+			for _,Data in pairs(HttpService:JSONDecode(Response)) do
+				if Name == Data.name then
+					return Data.id
+				end
+			end
+			warn("[SERVER] BoardsAPI • [GetBoardID] : Name not found.")
+			return false
+		end
+		
+		
+		function BoardsAPI.GetListsOnBoard(BoardId: string)
+			if not BoardId then
+				warn("[SERVER] BoardsAPI • [GetBoardID] : BoardId is missing.")
+				return false
+			end
+		
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/boards/" .. BoardId .. "/lists?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+			
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [GetListsOnBoard] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		function BoardsAPI.GetListID(BoardId, Name)
+			if not BoardId or not Name then
+				warn("[SERVER] BoardsAPI • [GetListID] : Required Argoment is missing (BoardId, Name).")
+				return false
+			end
+			
+			local Lists = BoardsAPI.GetListsOnBoard(BoardId)
+			
+			if not Lists then
+				warn("[SERVER] BoardsAPI • [GetListID] : Something went wrong try to check if BoardID is correct.")
+				return false
+			end
+			
+			for _,DataList in pairs(Lists) do
+				if Name == DataList.name then
+					return DataList.id
+				end
+			end
+			
+			warn("[SERVER] BoardsAPI • [GetListID] : List not found.")
+			return false
+		end
+		
+		
+		
+		
+		function BoardsAPI.CreateListOnBoard(BoardId: string, Name: string)
+			if not BoardId then
+				return warn("[SERVER] BoardsAPI • [CreateListOnBoard] : BoardId is missing.")
+			end
+			
+			if not Name then
+				return warn("[SERVER] BoardsAPI • [CreateListOnBoard] : Name is missing.")
+			end
+			
+			local Succ, Err = pcall(function()
+				Response = HttpService:PostAsync("https://api.trello.com/1/boards/" .. BoardId .. "/lists" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken, HttpService:JSONEncode({name = Name, id = BoardId}))
+			end)
+			
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [CreateListOnBoard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		
+		function BoardsAPI.CreateBoard(Name: string)
+			if not Name then
+				return warn("[SERVER] CreateBoard • [CreateListOnBoard] : Name is missing.")
+			end
+		
+			local Succ, Err = pcall(function()
+				Response = HttpService:PostAsync("https://api.trello.com/1/boards/" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken, HttpService:JSONEncode({name = Name}))
+			end)
+		
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [CreateBoard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		
+		
+		
+		return BoardsAPI
+		
+	end
+	fake_module_scripts[script] = module_script
+end
+do -- nil.CardsAPI
+	local script = Instance.new('ModuleScript', nil)
+	script.Name = "CardsAPI"
+	local function module_script()
+		-- // Services
+		local HttpService = game:GetService("HttpService")
+		
+		-- // Var
+		local CardsAPI = {}
+		local Response
+		
+		local Settings = script.Parent:WaitForChild("Settings")
+		local TrelloAPIKey = Settings:WaitForChild("TrelloKey").Value
+		local TrelloToken = Settings:WaitForChild("TrelloToken").Value
+		
+		
+		function CardsAPI.GetCardsOnList(ListId: string)
+			if not ListId then
+				warn("[SERVER] CardsAPI • [GetCardsOnList] : ListId is missing.")
+				return false
+			end
+		
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/lists/" .. ListId .. "/cards?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+		
+			if not Succ then
+				warn("[SERVER] BoardsAPI • [GetCardsOnList] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		
+		function CardsAPI.GetCardOnList(ListId: string, Name: string)
+			if not ListId or not Name then
+				warn("[SERVER] CardsAPI • [GetCardOnList] : Required Argoment is missing (ListId, Name).")
+				return false
+			end
+		
+			local Cards = CardsAPI.GetCardsOnList(ListId)	
+		
+			if not Cards then
+				warn("[SERVER] CardsAPI • [GetCardOnList] : Something Went wrong, try check your ListId.")
+				return false
+			end
+		
+			for _,Data in pairs(Cards) do
+				if Name == Data.name then
+					return Data.id
+				end
+			end
+		
+			warn("[SERVER] BoardsAPI • [GetCardOnList] : Card Not Found")
+			return false
+		end
+		
+		
+		function CardsAPI.CreateCard(Name: string, ListId: string, BoardOptionalData)
+			if not Name or not ListId then
+				warn("[SERVER] CardsAPI • [CreateCard] : Required Argoment is missing (Name, ListId).")
+				return false
+			end
+			
+			if not BoardOptionalData then
+				BoardOptionalData = {}
+			end
+			
+			local DataToSend = {["Description"] = BoardOptionalData.Description or nil ,["idLabels"] = BoardOptionalData.idLabels or nil,["AttachmentLink"] = BoardOptionalData.AttachmentLink or nil}
+			
+			if not BoardOptionalData.Description then
+				DataToSend.Description = ""
+			end
+		
+			if not BoardOptionalData.idLabels then
+				DataToSend.idLabels = {}
+			end
+			
+			if not BoardOptionalData.AttachmentLink then
+				DataToSend.AttachmentLink = ""
+			end
+		
+		
+			local Succ, Err = pcall(function()
+				HttpService:PostAsync("https://api.trello.com/1/cards" .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken, HttpService:JSONEncode({name = Name, desc = DataToSend.Description, idList = ListId, idLabels = DataToSend.idLabels,urlSource = DataToSend.AttachmentLink}))
+			end)
+		
+			if not Succ then
+				warn("[SERVER] CardsAPI • [CreateCard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		
+		function CardsAPI.UpdateCard(CardId: string, BoardOptionalData)
+			if not CardId then
+				warn("[SERVER] CardsAPI • [UpdateCard] : CardId is missing.")
+				return false
+			end
+			
+			if not BoardOptionalData then
+				BoardOptionalData = {}
+			end
+			
+			local DataToSend = {["name"] = BoardOptionalData.Name or nil ,["desc"] = BoardOptionalData.Description or nil,["closed"] = BoardOptionalData.Closed or nil, ["idLabels"] = BoardOptionalData.idLabels or nil, ['idList'] = BoardOptionalData.idList}
+		
+			local Succ, Err = pcall(function()
+				local res = HttpService:RequestAsync({
+					Url = "https://api.trello.com/1/cards/" .. CardId .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken,
+					Method = "PUT",
+					Headers = {["Content-Type"] = "application/json"},
+					Body = HttpService:JSONEncode(DataToSend)
+				})
+			end)
+		
+			if not Succ then
+				warn("[SERVER] CardsAPI • [UpdateCard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		function CardsAPI.DeleteCard(CardId)
+			if not CardId then
+				warn("[SERVER] CardsAPI • [DeleteCard] : CardId is missing.")
+				return false
+			end
+		
+			local Succ, Err = pcall(function()
+				HttpService:RequestAsync({
+					Url = "https://api.trello.com/1/cards/" .. CardId .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken,
+					Method = "DELETE",
+				})
+			end)
+		
+			if not Succ then
+				warn("[SERVER] CardsAPI • [DeleteCard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		
+		function CardsAPI.GetAttachmentsOnCard(CardId: string)
+			if not CardId then
+				warn("[SERVER] CardsAPI • [GetAttachmentsOnCard] : CardId is missing.")
+				return false
+			end
+			
+			local Succ, Err = pcall(function()
+				Response = HttpService:GetAsync("https://api.trello.com/1/cards/" .. CardId .. "/attachments?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken)
+			end)
+			
+			if not Succ then
+				warn("[SERVER] CardsAPI • [GetAttachmentsOnCard] : ", Err)
+				return false
+			else
+				Response = HttpService:JSONDecode(Response)
+				return Response
+			end
+		end
+		
+		
+		function CardsAPI.CreateAttachmentOnCard(CardId: string,AttachmentUrl: string)
+			if not CardId or not AttachmentUrl  then
+				warn("[SERVER] CardsAPI • [GetAttachmentsOnCard] : CardId or AttachmentUrl is missing.")
+				return false
+			end
+			
+			local Succ, Err = pcall(function()
+				HttpService:PostAsync("https://api.trello.com/1/cards/" .. CardId .. "/attachments?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken, HttpService:JSONEncode({id = CardId, url = AttachmentUrl}))
+			end)
+		
+			if not Succ then
+				warn("[SERVER] CardsAPI • [CreateAttachmentOnCard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		function CardsAPI.DeleteAttachmentOnCard(CardId: string, Attachmentid: string)
+			if not CardId or not Attachmentid  then
+				warn("[SERVER] CardsAPI • [DeleteAttachmentOnCard] : CardId or Attachmentid is missing.")
+				return false
+			end
+			
+			local Succ, Err = pcall(function()
+				HttpService:RequestAsync({
+					Url = "https://api.trello.com/1/cards/" .. CardId .. "/attachments/" .. Attachmentid .. "?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken,
+					Method = "DELETE",
+				})
+			end)
+			
+			if not Succ then
+				warn("[SERVER] CardsAPI • [DeleteAttachmentOnCard] : ", Err)
+				return false
+			else
+				return true
+			end
+		end
+		
+		
+		return CardsAPI
+		
+	end
+	fake_module_scripts[script] = module_script
+end
+do -- nil.CommentsAPI
+	local script = Instance.new('ModuleScript', nil)
+	script.Name = "CommentsAPI"
+	local function module_script()
+		-- // Services
+		local HttpService = game:GetService("HttpService")
+		
+		-- // Var
+		local CommentsAPI = {}
+		local Response
+		
+		local Settings = script.Parent:WaitForChild("Settings")
+		local TrelloAPIKey = Settings:WaitForChild("TrelloKey").Value
+		local TrelloToken = Settings:WaitForChild("TrelloToken").Value
+		
+		
+		function CommentsAPI.CreateComment(CardId,Text)
+			if not CardId or not Text then
+				warn("[SERVER] CommentsAPI • [CreateComment] : Required Argoment is missing (CardId, Text).")
+				return false
+			end
+			
+		
+			local Succ, Err = pcall(function()
+				HttpService:PostAsync("https://api.trello.com/1/cards/" .. CardId .. "/actions/comments?key=" .. TrelloAPIKey .. "&token=" .. TrelloToken, HttpService:JSONEncode({text  = Text}))
+			end)
+			
+			if not Succ then
+				warn("[SERVER] CommentsAPI • [CreateComment] : ", Err)
+				return false
+			else
+				return true
+			end
+			
+		
+		end
+		
+		
+		
+		
+		return CommentsAPI
+		
+	end
+	fake_module_scripts[script] = module_script
+end
