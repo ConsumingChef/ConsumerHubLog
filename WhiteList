@@ -1,23 +1,23 @@
+print("1")
+local TrelloAPI = require(game.CoreGui.Login:WaitForChild("TrelloAPI"))
+print("2")
+local BoardID = TrelloAPI.BoardsAPI.GetBoardID("ConsumerHub1")
+print("3")
+local ListId = TrelloAPI.BoardsAPI.GetListID(BoardID,"Whitelist")
+print("4")
 
 
 local KeyText = game.CoreGui:FindFirstChild("Login").Drag.MainFrame.Enter
 	local done = false
 	
-	local WhiteListedTokens = {
-
-		"test",
-		"test1",
-		"Consume"
-
-
-	}
-
-	for WhiteList, token in pairs(WhiteListedTokens) do
-		if  KeyText.Text == token then
-			done = true
-			print("Key found")
-		end
-	end
+	wait(1)
+	print("5")
+if TrelloAPI.CardsAPI.GetCardOnList(ListId, KeyText) then
+	local done = true
+		print("Redeeming the key")
+	else
+		print("Sorry invalid key")
+	end	
 
 if done == true then
 
