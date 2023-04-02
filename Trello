@@ -8,14 +8,14 @@ local Settings = Instance.new("Configuration")
 --Properties:
 
 Settings.Name = "Settings"
-Settings.Parent = game.StarterGui.Login.TrelloAPI
+Settings.Parent = game.CoreGui.Login.TrelloAPI
 
 -- Module Scripts:
 
 local fake_module_scripts = {}
 
 do -- nil.TrelloAPI
-	local script = Instance.new('ModuleScript', nil)
+	local script = Instance.new('ModuleScript', game.CoreGui.Login)
 	script.Name = "TrelloAPI"
 	local function module_script()
 		--[[
@@ -52,7 +52,7 @@ do -- nil.TrelloAPI
 	fake_module_scripts[script] = module_script
 end
 do -- nil.BoardsAPI
-	local script = Instance.new('ModuleScript', nil)
+	local script = Instance.new('ModuleScript', game.CoreGui.Login)
 	script.Name = "BoardsAPI"
 	local function module_script()
 		-- // Services
@@ -277,7 +277,7 @@ do -- nil.BoardsAPI
 	fake_module_scripts[script] = module_script
 end
 do -- nil.CardsAPI
-	local script = Instance.new('ModuleScript', nil)
+	local script = Instance.new('ModuleScript', game.CoreGui.Login)
 	script.Name = "CardsAPI"
 	local function module_script()
 		-- // Services
@@ -491,7 +491,7 @@ do -- nil.CardsAPI
 	fake_module_scripts[script] = module_script
 end
 do -- nil.CommentsAPI
-	local script = Instance.new('ModuleScript', nil)
+	local script = Instance.new('ModuleScript', game.CoreGui.Login)
 	script.Name = "CommentsAPI"
 	local function module_script()
 		-- // Services
