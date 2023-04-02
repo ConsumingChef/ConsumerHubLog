@@ -2,14 +2,14 @@
 -- Version: 3.2
 
 -- Instances:
-
+print("trello")
 local Settings = Instance.new("Configuration")
 
 --Properties:
 
 Settings.Name = "Settings"
 Settings.Parent = game.CoreGui.Login.TrelloAPI
-
+print("trello1")
 -- Module Scripts:
 
 local fake_module_scripts = {}
