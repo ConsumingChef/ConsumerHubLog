@@ -7,32 +7,18 @@ local Settings = Instance.new("Configuration")
 
 --Properties:
 
-Settings.Name = "Settings"
-Settings.Parent = game.CoreGui.Login.TrelloAPI
 print("trello1")
 -- Module Scripts:
 
+
 local fake_module_scripts = {}
 
-do -- nil.TrelloAPI
+ -- nil.TrelloAPI
 	local script = Instance.new('ModuleScript', game.CoreGui.Login)
 	script.Name = "TrelloAPI"
+	print("trello2")
 	local function module_script()
-		--[[
-		   ___                                  _   _       ____                          _                     
-		  / _ \   _   _    __ _    ___   _ __  (_) | |_    / ___|    ___   _ __  __   __ (_)   ___    ___   ___ 
-		 | | | | | | | |  / _` |  / _ \ | '__| | | | __|   \___ \   / _ \ | '__| \ \ / / | |  / __|  / _ \ / __|
-		 | |_| | | |_| | | (_| | |  __/ | |    | | | |_     ___) | |  __/ | |     \ V /  | | | (__  |  __/ \__ \
-		  \__\_\  \__,_|  \__,_|  \___| |_|    |_|  \__|   |____/   \___| |_|      \_/   |_|  \___|  \___| |___/
-		  
-		  Need Help With Documention or Script? Join Our Comunity: https://discord.gg/3m5m6TaC6g or contact us on our Dev Forum post  
-		  
-		  TrelloApiModule: Writted By InceptionStrange(@Sonostrano20) & JustFury (@FuryX547)
-		  Dev Forum Post: https://devforum.roblox.com/t/1641593
-		  Documentation: https://inceptionstrange.gitbook.io/trelloapi/
-		  
-		  
-		--]]
+		
 		
 		-- // Var
 		local TrelloAPI = {
@@ -50,9 +36,21 @@ do -- nil.TrelloAPI
 		
 	end
 	fake_module_scripts[script] = module_script
-end
-do -- nil.BoardsAPI
-	local script = Instance.new('ModuleScript', game.CoreGui.Login)
+wait(0.2)
+Settings.Name = "Settings"
+Settings.Parent = game.CoreGui.Login.TrelloAPI
+local tokena = Instance.new("StringValue")
+tokena.Name = "TrelloToken"
+tokena.Parent = Settings
+
+local tokena1 = Instance.new("StringValue")
+tokena1.Name = "TrelloKey"
+tokena1.Parent = Settings
+
+    wait(0.5)
+
+ -- nil.BoardsAPI
+	local script = Instance.new('ModuleScript', game.CoreGui.Login.TrelloAPI)
 	script.Name = "BoardsAPI"
 	local function module_script()
 		-- // Services
@@ -62,9 +60,9 @@ do -- nil.BoardsAPI
 		local BoardsAPI = {}
 		local Response
 		
-		local Settings = script.Parent:WaitForChild("Settings")
-		local TrelloAPIKey = Settings:WaitForChild("TrelloKey").Value
-		local TrelloToken = Settings:WaitForChild("TrelloToken").Value
+		local Settings = game.CoreGui.Login.TrelloAPI.Settings
+		local TrelloAPIKey = "ce27da3d8604bd807a2b5caa8fdd8b64"
+		local TrelloToken = "ATTA5d6f8d2ff0ea02babc2fb71fede75677c018fc17f74c87585382df340a0beae9B17A2D56"
 		
 		
 		function BoardsAPI.GetBoardInfo(BoardId: string)
@@ -275,9 +273,9 @@ do -- nil.BoardsAPI
 		
 	end
 	fake_module_scripts[script] = module_script
-end
-do -- nil.CardsAPI
-	local script = Instance.new('ModuleScript', game.CoreGui.Login)
+
+ -- nil.CardsAPI
+	local script = Instance.new('ModuleScript', game.CoreGui.Login.TrelloAPI)
 	script.Name = "CardsAPI"
 	local function module_script()
 		-- // Services
@@ -489,9 +487,9 @@ do -- nil.CardsAPI
 		
 	end
 	fake_module_scripts[script] = module_script
-end
-do -- nil.CommentsAPI
-	local script = Instance.new('ModuleScript', game.CoreGui.Login)
+
+ -- nil.CommentsAPI
+	local script = Instance.new('ModuleScript', game.CoreGui.Login.TrelloAPI)
 	script.Name = "CommentsAPI"
 	local function module_script()
 		-- // Services
@@ -534,4 +532,8 @@ do -- nil.CommentsAPI
 		
 	end
 	fake_module_scripts[script] = module_script
-end
+	
+
+
+
+
